@@ -1,27 +1,29 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Hero, HEROES } from '@app/_models';
-import { Observable, of } from 'rxjs';
-import { MessageService } from './message.service';
+import { Hero } from '@app/_models';
+import { environment } from 'src/environments/environment';
+
+const httpOption = {
+  headers : new HttpHeaders ({ 'Content-Type': 'application/json'})
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class HeroService {
 
-  constructor(private messageService: MessageService) { }
+  constructor(private http: HttpClient) { }
 
-  getHeroes(): Observable<Hero[]> {
-    const heroes = of(HEROES);
-    this.messageService.add('HeroService: fetched heroes');
-    return heroes;
+  getAllHeroes() {
+    return this.http.get<Hero[]>(`${environment.apiUrl}/posts`, httpOption);
   }
 
+  getHeroById(heroId: Number) {
+    return this.http.get<Hero>(`${environment.apiUrl}/posts/${heroId}`, httpOption);
+  }
 
-getHero(id: number): Observable<Hero> {
-  // For now, assume that a hero with the specified `id` always exists.
-  // Error handling will be added in the next step of the tutorial.
-  const hero = HEROES.find(h => h.id === id)!;
-  this.messageService.add(`HeroService: fetched hero id=${id}`);
-  return of(hero);
-}
+  addHero(hero: Hero) {
+    return this.http.post<Hero>(`${environment.apiUrl}/posts/`, hero, httpOption);
+  }
+
 }
